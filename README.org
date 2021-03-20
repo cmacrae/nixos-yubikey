@@ -9,13 +9,16 @@
   configuration environment from a ramdisk (not only the ~$GNUPGHOME~,
   but also the entire NixOS filesystem). The only way to write state
   to persistent storage is by explicit user action.
+  
+  This fork (original work by [[https://github.com/dhess/nixos-yubikey][@dhess]] - thank you!) uses [[https://nixos.wiki/wiki/Flakes][Nix Flakes]]
+  and [[https://github.com/cmacrae/nixos-yubikey/releases][provides automated ISO releases]].
 
 ** Requirements
 
    You'll need the following:
 
-   - An environment capable of building [[https://github.com/NixOS/nixpkgs][Nixpkgs]] for ~x86_64-linux~
-     hosts.
+   - If you want to [[#usage][build your own ISO]], you'll need an environment
+     capable of building [[https://github.com/NixOS/nixpkgs][nixpkgs]] for ~x86_64-linux~ hosts using [[https://nixos.wiki/wiki/Flakes][flakes]].
 
    - At least one YubiKey, preferably a YubiKey 4 or later.
 
@@ -32,7 +35,7 @@
 
    1. Build the NixOS bootable image.
       #+BEGIN_SRC sh
-      nix build -f default.nix nixos-yubikey
+      nix build ".#iso"
       #+END_SRC
    2. Copy the ISO file in ~result/iso~ to a USB stick or CD/DVD.
    3. Boot the image on trusted hardware.

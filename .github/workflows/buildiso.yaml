@@ -1,0 +1,89 @@
+---
+name: "Build a NixOS LiveCD ISO for YubiKey management"
+on:
+  push:
+    branches:
+      - master
+      - flakes
+
+jobs:
+  buildiso:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        # Flakes don't work on shallow clones
+        fetch-depth: 0
+
+    - name: Install Nix
+      uses: cachix/install-nix-action@v12
+      with:
+        install_url: https://github.com/numtide/nix-flakes-installer/releases/download/nix-2.4pre20210207_fd6eaa1/install
+
+    - name: Enable Flakes
+      run: echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf
+
+    - name: Show flake.lock & ISO derivation
+      id: show
+      run: |
+        nix show-derivation ".#iso" > iso.drv
+        echo -e "\n\e[4mflake.lock\e[0m\n"
+        cat ./flake.lock
+        echo -e "\n\e[4mISO derivation\e[0m\n"
+        cat ./iso.drv
+
+    - name: Cache ISO derivation
+      id: cache-drv
+      uses: actions/cache@v2
+      with:
+        path: ./iso.drv
+        key: iso-drv-${{ hashFiles('iso.drv') }}
+
+    - name: Build LiveCD ISO image
+      id: iso
+      if: steps.cache-drv.outputs.cache-hit != 'true'
+      run: |
+        nix build ".#iso"
+        ISOFILE=$(find ./result/iso -type f)
+        echo "::set-output name=filepath::${ISOFILE}"
+        echo "::set-output name=filename::$(basename $ISOFILE)"
+        echo "::set-output name=sha::$(sha256sum $ISOFILE | cut -d " " -f 1)"
+        echo "::set-output name=version::$(echo $ISOFILE | cut -d - -f 3)"
+
+    - name: Create Release
+      id: create-release
+      if: steps.cache-drv.outputs.cache-hit != 'true'
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        tag_name: ${{steps.iso.outputs.version}}
+        release_name: ${{ steps.iso.outputs.version }}
+        body: |
+          This image was built in [this pipeline](https://github.com/${{ github.repository }}/commit/${{ github.sha }}/checks).  
+          Check the build output for information on the Flake inputs & the derivation that made this image.  
+          The SHA-256 checksum of the image is  
+          `${{ steps.iso.outputs.sha}}`.
+        draft: false
+        prerelease: false
+
+    - name: Upload Release Asset
+      id: upload-release-asset
+      if: steps.cache-drv.outputs.cache-hit != 'true'
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      with:
+        upload_url: ${{ steps.create-release.outputs.upload_url }}
+        asset_path: ${{ steps.iso.outputs.filepath}}
+        asset_name: ${{ steps.iso.outputs.filename}}
+        asset_content_type: application/x-iso9660-image
+
+    - name: Clean-up releases
+      uses: dev-drprasad/delete-older-releases@v0.1.0
+      with:
+        keep_latest: 5
+      env:
+        GITHUB_TOKEN: ${{ github.token }}

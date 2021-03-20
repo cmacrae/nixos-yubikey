@@ -26,13 +26,15 @@
 
 let
 
-  hopenpgp-tools = (haskell.lib.justStaticExecutables haskellPackages.hopenpgp-tools);
+  # FIXME: Marked as broken
+  # hopenpgp-tools = (haskell.lib.justStaticExecutables haskellPackages.hopenpgp-tools);
 
   cryptsetupcmd = "${cryptsetup}/bin/cryptsetup";
   gitcmd = "${git}/bin/git";
   gpg = "${gnupg}/bin/gpg";
   grep = "${gnugrep}/bin/grep";
-  hokey = "${hopenpgp-tools}/bin/hokey";
+  # FIXME: Marked as broken
+  # hokey = "${hopenpgp-tools}/bin/hokey";
   partedcmd = "${parted}/bin/parted";
   whiptail = "${newt}/bin/whiptail";
 
@@ -168,14 +170,15 @@ let
       ${gpg} --expert --edit-key $KEYID
     '';
 
-    gpg-verify-keys = writeShellScriptBin "gpg-verify-keys" ''
-      set -e
+    # FIXME: Marked as broken
+    # gpg-verify-keys = writeShellScriptBin "gpg-verify-keys" ''
+    #   set -e
 
-      ${opts}
+    #   ${opts}
 
-      ${get_keyid}
-      ${gpg} --export $KEYID | ${hokey} lint
-    '';
+    #   ${get_keyid}
+    #   ${gpg} --export $KEYID | ${hokey} lint
+    # '';
 
     gpg-export-keys = writeShellScriptBin "gpg-export-keys" ''
       set -e

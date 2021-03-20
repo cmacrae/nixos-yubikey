@@ -1,0 +1,61 @@
+{
+  "nodes": {
+    "drduh-gpg-conf": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1613420920,
+        "narHash": "sha256-ui3VylKFd68sV/PligG+7S86Xi+TGYOoeekBDFvBwJY=",
+        "owner": "drduh",
+        "repo": "config",
+        "rev": "2703f5992be264e993a46802169a76e7211d9ad0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "drduh",
+        "repo": "config",
+        "type": "github"
+      }
+    },
+    "drduh-yubikey-guide": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1613092301,
+        "narHash": "sha256-mxtVBHv4jV1lGBoMmoa7lNYgJGip710pYgsBnbJ5xIE=",
+        "owner": "drduh",
+        "repo": "yubikey-guide",
+        "rev": "de29a9e45c285c39bea8706932653d70dfeb9570",
+        "type": "github"
+      },
+      "original": {
+        "owner": "drduh",
+        "repo": "yubikey-guide",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1616059284,
+        "narHash": "sha256-w2BO+XvKnlIScTrbM0OwZlfA5HO7UB1Vea07FlMmfGA=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "01897afb96063f5e2d6ee6f76ff843c413e7b271",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "release-20.09",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "drduh-gpg-conf": "drduh-gpg-conf",
+        "drduh-yubikey-guide": "drduh-yubikey-guide",
+        "nixpkgs": "nixpkgs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
